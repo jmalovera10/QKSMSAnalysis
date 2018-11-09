@@ -2,7 +2,7 @@
 
 # QKSMS Analysis
 
-This repository is intended to make a detailed analysis for th QKSMS application. The original repository can be foun in [here](https://github.com/moezbhatti/qksms) 
+This repository is intended to make a detailed analysis for th QKSMS application. The original repository can be found in [here](https://github.com/moezbhatti/qksms) 
 
 ## License
 
