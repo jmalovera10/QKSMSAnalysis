@@ -33,6 +33,7 @@ import javax.inject.Inject
 
 class ContactAdapter @Inject constructor() : QkAdapter<Contact>() {
 
+    //TOMAS VENEGAS: this cannot be weak??
     val contactSelected: Subject<Contact> = PublishSubject.create()
 
     private val numbersViewPool = RecyclerView.RecycledViewPool()

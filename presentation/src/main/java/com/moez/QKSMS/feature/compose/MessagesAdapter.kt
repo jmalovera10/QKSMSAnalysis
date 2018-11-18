@@ -64,12 +64,12 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MessagesAdapter @Inject constructor(
-        private val context: Context,
-        private val colors: Colors,
-        private val dateFormatter: DateFormatter,
-        private val navigator: Navigator,
-        private val prefs: Preferences,
-        private val subscriptionManager: SubscriptionManagerCompat
+        private val context: Context?,
+        private val colors: Colors?,
+        private val dateFormatter: DateFormatter?,
+        private val navigator: Navigator?,
+        private val prefs: Preferences?,
+        private val subscriptionManager: SubscriptionManagerCompat?
 ) : QkRealmAdapter<Message>() {
 
     companion object {
@@ -88,7 +88,7 @@ class MessagesAdapter @Inject constructor(
             contactCache.clear()
 
             // Update the theme
-            theme = colors.theme(value?.first?.id ?: 0)
+            theme = colors!!.theme(value?.first?.id ?: 0)
 
             updateData(value?.second)
         }
@@ -113,9 +113,9 @@ class MessagesAdapter @Inject constructor(
     private val contactCache = ContactCache()
     private val expanded = HashMap<Long, Boolean>()
     private val partsViewPool = RecyclerView.RecycledViewPool()
-    private val subs = subscriptionManager.activeSubscriptionInfoList
+    private val subs = subscriptionManager!!.activeSubscriptionInfoList
 
-    var theme: Colors.Theme = colors.theme()
+    var theme: Colors.Theme = colors!!.theme()
 
     /**
      * If the viewType is negative, then the viewHolder has an attachment. We'll consider
@@ -139,7 +139,7 @@ class MessagesAdapter @Inject constructor(
             view.body.setBackgroundTint(theme.theme)
         }
 
-        view.attachments.adapter = PartsAdapter(context, navigator, theme)
+        view.attachments.adapter = PartsAdapter(context!!, navigator!!, theme)
         view.attachments.setRecycledViewPool(partsViewPool)
         view.body.forwardTouches(view)
 
@@ -183,7 +183,7 @@ class MessagesAdapter @Inject constructor(
             cancel.progress = 2
 
             if (isCancellable) {
-                val delay = when (prefs.sendDelay.get()) {
+                val delay = when (prefs!!.sendDelay.get()) {
                     Preferences.SEND_DELAY_SHORT -> 3000
                     Preferences.SEND_DELAY_MEDIUM -> 5000
                     Preferences.SEND_DELAY_LONG -> 10000
@@ -206,7 +206,7 @@ class MessagesAdapter @Inject constructor(
         val timeSincePrevious = TimeUnit.MILLISECONDS.toMinutes(message.date - (previous?.date ?: 0))
         val simIndex = subs.takeIf { it.size > 1 }?.indexOfFirst { it.subscriptionId == message.subId } ?: -1
 
-        view.timestamp.text = dateFormatter.getMessageTimestamp(message.date)
+        view.timestamp.text = dateFormatter!!.getMessageTimestamp(message.date)
         view.simIndex.text = "${simIndex + 1}"
 
         view.timestamp.setVisible(timeSincePrevious >= BubbleUtils.TIMESTAMP_THRESHOLD || message.subId != previous?.subId && simIndex != -1)
@@ -216,7 +216,7 @@ class MessagesAdapter @Inject constructor(
 
         // Bind the grouping
         val media = message.parts.filter { it.isImage() || it.isVideo() || it.isVCard() }
-        view.setPadding(bottom = if (canGroup(message, next)) 0 else 16.dpToPx(context))
+        view.setPadding(bottom = if (canGroup(message, next)) 0 else 16.dpToPx(context!!))
 
 
         // Bind the avatar
@@ -264,12 +264,12 @@ class MessagesAdapter @Inject constructor(
         val view = viewHolder.itemView
 
         val age = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - message.date)
-        val timestamp = dateFormatter.getTimestamp(message.date)
+        val timestamp = dateFormatter!!.getTimestamp(message.date)
 
         view.status.text = when {
-            message.isSending() -> context.getString(R.string.message_status_sending)
-            message.isDelivered() -> context.getString(R.string.message_status_delivered, timestamp)
-            message.isFailedMessage() -> context.getString(R.string.message_status_failed)
+            message.isSending() -> context!!.getString(R.string.message_status_sending)
+            message.isDelivered() -> context!!.getString(R.string.message_status_delivered, timestamp)
+            message.isFailedMessage() -> context!!.getString(R.string.message_status_failed)
             !message.isMe() && conversation?.recipients?.size ?: 0 > 1 -> "${contactCache[message.address]?.getDisplayName()} • $timestamp"
             else -> timestamp
         }

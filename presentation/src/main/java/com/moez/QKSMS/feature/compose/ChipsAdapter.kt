@@ -39,14 +39,14 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.contact_chip.view.*
 import javax.inject.Inject
 
-class ChipsAdapter @Inject constructor(private val context: Context) : QkAdapter<Contact>() {
+class ChipsAdapter @Inject constructor(private val context: Context?) : QkAdapter<Contact>() {
 
     companion object {
         private const val TYPE_EDIT_TEXT = 0
         private const val TYPE_ITEM = 1
     }
 
-    private val hint: String = context.getString(R.string.title_compose)
+    private val hint: String = context!!.getString(R.string.title_compose)
     private val editText = View.inflate(context, R.layout.chip_input_list_item, null) as QkEditText
 
     var view: RecyclerView? = null
@@ -58,8 +58,8 @@ class ChipsAdapter @Inject constructor(private val context: Context) : QkAdapter
     init {
         val wrap = ViewGroup.LayoutParams.WRAP_CONTENT
         editText.layoutParams = FlexboxLayoutManager.LayoutParams(wrap, wrap).apply {
-            minHeight = 36.dpToPx(context)
-            minWidth = 56.dpToPx(context)
+            minHeight = 36.dpToPx(context!!)
+            minWidth = 56.dpToPx(context!!)
             flexGrow = 8f
         }
 

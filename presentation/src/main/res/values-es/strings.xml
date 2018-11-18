@@ -120,7 +120,10 @@
   <string name="compose_send_cd">Enviar mensaje</string>
   <string name="message_status_sending">Enviando&#8230;</string>
   <string name="message_status_delivered">Entregado %s</string>
-  <string name="message_status_failed">No se envió. Pulse para volver a intentarlo</string>
+
+  <!-- Tomas Venegas: try to have a more expresive message: if this message can be shown for other reasons have differnt messages-->
+  <string name="message_status_failed">No se envió. Revise su conexión a la red y pulse para volver a intentarlo</string>
+
   <string name="info_title">Detalles</string>
   <string name="info_name">Título de la conversación</string>
   <string name="info_name_hint">Introducir título</string>
@@ -306,7 +309,7 @@
     <item quantity="other">nuevos mensajes de %s</item>
   </plurals>
   <string name="notification_message_failed_title">Mensaje no enviado</string>
-  <string name="notification_message_failed_text">El mensaje a %s no se pudo enviar</string>
+  <string name="notification_message_failed_text">El mensaje a %s no se pudo enviar. Revise su conexión a la red.</string>
   <string-array name="night_modes">
     <item>Desabilitado</item>
     <item>Siempre activado</item>
