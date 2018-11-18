@@ -34,9 +34,9 @@ import kotlinx.android.synthetic.main.conversation_list_item.view.*
 import javax.inject.Inject
 
 class ConversationsAdapter @Inject constructor(
-        private val context: Context,
-        private val dateFormatter: DateFormatter,
-        private val navigator: Navigator
+        private val context: Context?,
+        private val dateFormatter: DateFormatter?,
+        private val navigator: Navigator?
 ) : QkRealmAdapter<Conversation>() {
 
     init {
@@ -61,11 +61,11 @@ class ConversationsAdapter @Inject constructor(
         }
 
         return QkViewHolder(view).apply {
-            view.setOnClickListener {
+            view!!.setOnClickListener {
                 val conversation = getItem(adapterPosition)!!
                 when (toggleSelection(conversation.id, false)) {
                     true -> view.isActivated = isSelected(conversation.id)
-                    false -> navigator.showConversation(conversation.id)
+                    false -> navigator!!.showConversation(conversation.id)
                 }
             }
             view.setOnLongClickListener {
@@ -85,9 +85,9 @@ class ConversationsAdapter @Inject constructor(
 
         view.avatars.contacts = conversation.recipients
         view.title.text = conversation.getTitle()
-        view.date.text = dateFormatter.getConversationTimestamp(conversation.date)
+        view.date.text = dateFormatter!!.getConversationTimestamp(conversation.date)
         view.snippet.text = when (conversation.me) {
-            true -> context.getString(R.string.main_sender_you, conversation.snippet)
+            true -> context!!.getString(R.string.main_sender_you, conversation.snippet)
             false -> conversation.snippet
         }
         view.pinned.isVisible = conversation.pinned

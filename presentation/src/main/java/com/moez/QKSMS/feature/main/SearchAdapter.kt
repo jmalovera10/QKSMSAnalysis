@@ -36,13 +36,13 @@ import kotlinx.android.synthetic.main.search_list_item.view.*
 import javax.inject.Inject
 
 class SearchAdapter @Inject constructor(
-        private val context: Context,
-        private val colors: Colors,
-        private val dateFormatter: DateFormatter,
-        private val navigator: Navigator
+        private val context: Context?,
+        private val colors: Colors?,
+        private val dateFormatter: DateFormatter?,
+        private val navigator: Navigator?
 ) : QkAdapter<SearchResult>() {
 
-    private var highlightColor: Int = colors.theme().highlight
+    private var highlightColor: Int = colors!!.theme().highlight
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QkViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -50,7 +50,7 @@ class SearchAdapter @Inject constructor(
         return QkViewHolder(view).apply {
             view.setOnClickListener {
                 val result = getItem(adapterPosition)
-                navigator.showConversation(result.conversation.id, result.query.takeIf { result.messages > 0 })
+                navigator!!.showConversation(result.conversation.id, result.query.takeIf { result.messages > 0 })
             }
         }
     }
@@ -77,16 +77,16 @@ class SearchAdapter @Inject constructor(
         when (result.messages == 0) {
             true -> {
                 view.date.setVisible(true)
-                view.date.text = dateFormatter.getConversationTimestamp(result.conversation.date)
+                view.date.text = dateFormatter!!.getConversationTimestamp(result.conversation.date)
                 view.snippet.text = when (result.conversation.me) {
-                    true -> context.getString(R.string.main_sender_you, result.conversation.snippet)
+                    true -> context!!.getString(R.string.main_sender_you, result.conversation.snippet)
                     false -> result.conversation.snippet
                 }
             }
 
             false -> {
                 view.date.setVisible(false)
-                view.snippet.text = context.getString(R.string.main_message_results, result.messages)
+                view.snippet.text = context!!.getString(R.string.main_message_results, result.messages)
             }
         }
     }
