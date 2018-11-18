@@ -118,6 +118,7 @@ class ConversationItemTouchCallback @Inject constructor(
             Preferences.SWIPE_ACTION_DELETE -> R.drawable.ic_delete_white_24dp
             Preferences.SWIPE_ACTION_CALL -> R.drawable.ic_call_white_24dp
             Preferences.SWIPE_ACTION_READ -> R.drawable.ic_check_white_24dp
+            //Tomas Venegas: try recycling bitmaps for better memory performance
             else -> null
         }
 

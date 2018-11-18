@@ -19,21 +19,27 @@
 package com.moez.QKSMS.feature.compose
 
 import android.Manifest
+import android.annotation.TargetApi
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.ContentValues
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Telephony
 import android.text.format.DateFormat
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -269,6 +275,18 @@ class ComposeActivity : QkThemedActivity(), ComposeView {
     }
 
     override fun requestCamera() {
+        //Tomas Venegas: WHEN REQUESTING THE GALLERY CHECK IF THE APP IS THE DEFAULT APP, IF NOT NOTIFY THE USER
+        //AND PROMPT HIM TO CHANGE IT. Apparently this will also solve the problem of requesting files permission
+        //at least in Android8.0
+        val packageName = this.packageName
+        if(!Telephony.Sms.getDefaultSmsPackage(this).equals(packageName)) {
+            this.toast("If this is not the default sms app this won't work!")
+            //or any other notification
+            val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
+            this.startActivity(intent)
+        }
+
         cameraDestination = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
                 .let { timestamp -> ContentValues().apply { put(MediaStore.Images.Media.TITLE, timestamp) } }
                 .let { cv -> contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv) }
@@ -279,6 +297,19 @@ class ComposeActivity : QkThemedActivity(), ComposeView {
     }
 
     override fun requestGallery() {
+
+        //Tomas Venegas: WHEN REQUESTING THE GALLERY CHECK IF THE APP IS THE DEFAULT APP, IF NOT NOTIFY THE USER
+        //AND PROMPT HIM TO CHANGE IT. Apparently this will also solve the problem of requesting files permission
+        //at least in Android8.0
+        val packageName = this.packageName
+        if(!Telephony.Sms.getDefaultSmsPackage(this).equals(packageName)) {
+            this.toast("If this is not the default sms app this won't work!")
+            //or any other notification
+            val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
+            this.startActivity(intent)
+        }
+
         val intent = Intent(Intent.ACTION_PICK)
                 .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
                 .addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
@@ -308,6 +339,7 @@ class ComposeActivity : QkThemedActivity(), ComposeView {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.compose, menu)
+
         return super.onCreateOptionsMenu(menu)
     }
 

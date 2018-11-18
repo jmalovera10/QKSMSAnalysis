@@ -18,10 +18,14 @@
  */
 package com.moez.QKSMS.feature.compose
 
+import android.app.PendingIntent.getActivity
 import android.content.Context
+import android.content.Intent
+import android.provider.Telephony
 import android.telephony.PhoneNumberUtils
 import android.telephony.SmsMessage
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.core.widget.toast
 import com.moez.QKSMS.R
 import com.moez.QKSMS.common.Navigator
@@ -72,6 +76,9 @@ import io.realm.RealmList
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
+import androidx.core.content.ContextCompat.startActivity
+
+
 
 class ComposeViewModel @Inject constructor(
         @Named("query") private val query: String,
@@ -460,7 +467,10 @@ class ComposeViewModel @Inject constructor(
         // Open the attachment options
         view.attachIntent
                 .autoDisposable(view.scope())
-                .subscribe { newState { copy(attaching = !attaching) } }
+                .subscribe {
+                    newState { copy(attaching = !attaching) }
+                }
+
 
         // Attach a photo from camera
         view.cameraIntent
@@ -478,7 +488,15 @@ class ComposeViewModel @Inject constructor(
         view.galleryIntent
                 .doOnNext { newState { copy(attaching = false) } }
                 .autoDisposable(view.scope())
-                .subscribe { view.requestGallery() }
+                .subscribe {
+
+                    //TOMAS VENEGAS: add permission check and request
+                    if (permissionManager.hasStorage()) {
+                    view.requestGallery()
+                }
+                else{
+                    view.requestStoragePermission()
+                }}
 
         // Choose a time to schedule the message
         view.scheduleIntent

@@ -667,7 +667,10 @@ public class PduPersister {
                     throw new MmsException(
                             "Unrecognized PDU type: " + Integer.toHexString(msgType));
             }
-        } finally {
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
             synchronized (PDU_CACHE_INSTANCE) {
                 if (pdu != null) {
                     assert (PDU_CACHE_INSTANCE.get(uri) == null);
@@ -827,15 +830,20 @@ public class PduPersister {
                 }
                 String dataText = new EncodedStringValue(data).getString();
                 cv.put(Part.TEXT, dataText);
+
+                //Check result to see if is successfull or not and if not save image instead of throwing exception.
+                //- 1 means an error was launched::: try and avoid those errors
                 if (mContentResolver.update(uri, cv, null, null) != 1) {
+
                     if (data.length > MAX_TEXT_BODY_SIZE) {
                         ContentValues cv2 = new ContentValues();
                         cv2.put(Part.TEXT, cutString(dataText, MAX_TEXT_BODY_SIZE));
                         if (mContentResolver.update(uri, cv2, null, null) != 1) {
                             throw new MmsException("unable to update " + uri.toString());
                         }
-                    } else {
-                        throw new MmsException("unable to update " + uri.toString());
+                    }
+                    else {
+                           throw new MmsException("unable to update " + uri.toString());
                     }
                 }
             } else {
