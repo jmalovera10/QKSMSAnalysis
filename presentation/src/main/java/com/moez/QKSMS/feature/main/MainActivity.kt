@@ -338,4 +338,10 @@ class MainActivity : QkThemedActivity(), MainView {
         backPressedIntent.onNext(Unit)
     }
 
+    override fun onDestroy(){
+        recyclerView.adapter = null
+        recyclerView.layoutManager = null
+        return super.onDestroy()
+    }
+
 }
