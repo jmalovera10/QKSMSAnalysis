@@ -83,8 +83,8 @@ class SearchAdapter @Inject constructor(
                     false -> result.conversation.snippet
                 }
             }
-
             false -> {
+                view.isEnabled = false
                 view.date.setVisible(false)
                 view.snippet.text = context!!.getString(R.string.main_message_results, result.messages)
             }
