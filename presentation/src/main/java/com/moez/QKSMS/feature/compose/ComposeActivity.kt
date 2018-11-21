@@ -356,4 +356,11 @@ class ComposeActivity : QkThemedActivity(), ComposeView {
         backPressedIntent.onNext(Unit)
     }
 
+    override fun onDestroy() {
+        chips.layoutManager = null
+        chips.adapter = null
+        window.callback = null
+        super.onDestroy()
+    }
+
 }
