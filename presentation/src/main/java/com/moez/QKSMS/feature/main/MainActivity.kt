@@ -64,7 +64,7 @@ import javax.inject.Inject
 
 class MainActivity : QkThemedActivity(), MainView {
 
-    @Inject lateinit  var navigator: Navigator
+    @Inject lateinit var navigator: Navigator
     @Inject lateinit var conversationsAdapter: ConversationsAdapter
     @Inject lateinit var drawerBadgesExperiment: DrawerBadgesExperiment
     @Inject lateinit var searchAdapter: SearchAdapter
@@ -336,6 +336,12 @@ class MainActivity : QkThemedActivity(), MainView {
 
     override fun onBackPressed() {
         backPressedIntent.onNext(Unit)
+    }
+
+    override fun onDestroy() {
+        recyclerView.adapter = null
+        recyclerView.layoutManager = null
+        super.onDestroy()
     }
 
 }

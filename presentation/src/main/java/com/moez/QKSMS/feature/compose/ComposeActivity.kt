@@ -19,13 +19,11 @@
 package com.moez.QKSMS.feature.compose
 
 import android.Manifest
-import android.annotation.TargetApi
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.ContentValues
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -34,10 +32,8 @@ import android.provider.Telephony
 import android.text.format.DateFormat
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.toast
 import androidx.lifecycle.ViewModelProvider
@@ -50,13 +46,7 @@ import com.moez.QKSMS.R
 import com.moez.QKSMS.common.androidxcompat.scope
 import com.moez.QKSMS.common.base.QkThemedActivity
 import com.moez.QKSMS.common.util.DateFormatter
-import com.moez.QKSMS.common.util.extensions.autoScrollToStart
-import com.moez.QKSMS.common.util.extensions.resolveThemeColor
-import com.moez.QKSMS.common.util.extensions.scrapViews
-import com.moez.QKSMS.common.util.extensions.setBackgroundTint
-import com.moez.QKSMS.common.util.extensions.setTint
-import com.moez.QKSMS.common.util.extensions.setVisible
-import com.moez.QKSMS.common.util.extensions.showKeyboard
+import com.moez.QKSMS.common.util.extensions.*
 import com.moez.QKSMS.model.Attachment
 import com.moez.QKSMS.model.Contact
 import com.moez.QKSMS.model.Message
@@ -364,6 +354,13 @@ class ComposeActivity : QkThemedActivity(), ComposeView {
 
     override fun onBackPressed() {
         backPressedIntent.onNext(Unit)
+    }
+
+    override fun onDestroy() {
+        chips.layoutManager = null
+        chips.adapter = null
+        window.callback = null
+        super.onDestroy()
     }
 
 }
