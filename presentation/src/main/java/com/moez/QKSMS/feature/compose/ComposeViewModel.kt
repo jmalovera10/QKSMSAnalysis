@@ -635,6 +635,7 @@ class ComposeViewModel @Inject constructor(
                         }
 
                         else -> {
+                            //Tomas Venegas: remove forEach
                             addresses.forEach { addr ->
                                 val threadId = TelephonyCompat.getOrCreateThreadId(context, addr)
                                 val address = listOf(conversationRepo.getConversation(threadId)?.recipients?.firstOrNull()?.address

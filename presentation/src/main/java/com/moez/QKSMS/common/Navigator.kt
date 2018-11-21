@@ -45,19 +45,19 @@ import javax.inject.Singleton
 
 @Singleton
 class Navigator @Inject constructor(
-        private val context: Context,
-        private val analyticsManager: AnalyticsManager,
-        private val notificationManager: NotificationManager,
-        private val permissions: PermissionManager
+        private val context: Context?,
+        private val analyticsManager: AnalyticsManager?,
+        private val notificationManager: NotificationManager?,
+        private val permissions: PermissionManager?
 ) {
 
     private fun startActivity(intent: Intent) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+        context!!.startActivity(intent)
     }
 
     private fun startActivityExternal(intent: Intent) {
-        if (intent.resolveActivity(context.packageManager) != null) {
+        if (intent.resolveActivity(context!!.packageManager) != null) {
             startActivity(intent)
         } else {
             startActivity(Intent.createChooser(intent, null))
@@ -69,14 +69,14 @@ class Navigator @Inject constructor(
      * one of [main_menu, compose_schedule, settings_night, settings_theme]
      */
     fun showQksmsPlusActivity(source: String) {
-        analyticsManager.track("Viewed QKSMS+", Pair("source", source))
+        analyticsManager!!.track("Viewed QKSMS+", Pair("source", source))
         val intent = Intent(context, PlusActivity::class.java)
         startActivity(intent)
     }
 
     fun showDefaultSmsDialog() {
         val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
-        if (Telephony.Sms.getDefaultSmsPackage(context) != context.packageName) {
+        if (Telephony.Sms.getDefaultSmsPackage(context) != context!!.packageName) {
             intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, context.packageName)
         }
         startActivity(intent)
@@ -113,12 +113,12 @@ class Navigator @Inject constructor(
     }
 
     fun showBackup() {
-        analyticsManager.track("Viewed Backup")
+        analyticsManager!!.track("Viewed Backup")
         startActivity(Intent(context, BackupActivity::class.java))
     }
 
     fun showScheduled() {
-        analyticsManager.track("Viewed Scheduled")
+        analyticsManager!!.track("Viewed Scheduled")
         val intent = Intent(context, ScheduledActivity::class.java)
         startActivity(intent)
     }
@@ -154,7 +154,7 @@ class Navigator @Inject constructor(
     }
 
     fun makePhoneCall(address: String) {
-        val action = if (permissions.hasCalling()) Intent.ACTION_CALL else Intent.ACTION_DIAL
+        val action = if (permissions!!.hasCalling()) Intent.ACTION_CALL else Intent.ACTION_DIAL
         val intent = Intent(action, Uri.parse("tel:$address"))
         startActivityExternal(intent)
     }
@@ -202,7 +202,7 @@ class Navigator @Inject constructor(
     }
 
     fun showInvite() {
-        analyticsManager.track("Clicked Invite")
+        analyticsManager!!.track("Clicked Invite")
         Intent(Intent.ACTION_SEND)
                 .setType("text/plain")
                 .putExtra(Intent.EXTRA_TEXT, "http://qklabs.com/download")
@@ -233,13 +233,13 @@ class Navigator @Inject constructor(
     fun showNotificationChannel(threadId: Long = 0) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (threadId != 0L) {
-                notificationManager.createNotificationChannel(threadId)
+                notificationManager!!.createNotificationChannel(threadId)
             }
 
-            val channelId = notificationManager.buildNotificationChannelId(threadId)
+            val channelId = notificationManager!!.buildNotificationChannelId(threadId)
             val intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
             intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context!!.packageName)
             startActivity(intent)
         }
     }
