@@ -108,6 +108,7 @@ abstract class QkThemedActivity : QkActivity() {
         super.onPostCreate(savedInstanceState)
 
         // Update the colours of the menu items
+        // Tomas Venegas : iterators are a bad performance practice
         Observables.combineLatest(menu, theme) { menu, theme ->
             val text = resolveThemeColor(android.R.attr.textColorSecondary)
             (0 until menu.size())

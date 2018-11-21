@@ -22,6 +22,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.viewpager.widget.ViewPager
@@ -62,22 +63,23 @@ class PagerTitleView @JvmOverloads constructor(context: Context, attrs: Attribut
     private fun recreate() {
         removeAllViews()
 
-        pager?.adapter?.count?.forEach { position ->
-            val view = LayoutInflater.from(context).inflate(R.layout.tab_view, this, false)
-            view.label.text = pager?.adapter?.getPageTitle(position)
-            view.setOnClickListener { pager?.currentItem = position }
 
+        //Tomas Venegas: Iterators are a bad performance practice as is declaring variables in loops
+        val view: View = LayoutInflater.from(context).inflate(R.layout.tab_view, this, false)
+        for(i in 0 until pager?.adapter?.count!!){
+            view.label.text = pager?.adapter?.getPageTitle(i)
+            view.setOnClickListener { pager?.currentItem = i }
             addView(view)
         }
 
-        childCount.forEach { index ->
-            getChildAt(index).isActivated = index == pager?.currentItem
+        for( i in 0 until childCount){
+            getChildAt(i).isActivated = i == pager?.currentItem
         }
 
         pager?.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
-                childCount.forEach { index ->
-                    getChildAt(index).isActivated = index == position
+                for( i in 0 until childCount){
+                    getChildAt(i).isActivated = i == position
                 }
             }
         })
@@ -99,8 +101,8 @@ class PagerTitleView @JvmOverloads constructor(context: Context, attrs: Attribut
                 }
                 .autoDisposable(ViewScopeProvider.from(this))
                 .subscribe { colorStateList ->
-                    childCount.forEach { index ->
-                        (getChildAt(index) as? TextView)?.setTextColor(colorStateList)
+                    for( i in 0 until childCount){
+                        (getChildAt(i) as? TextView)?.setTextColor(colorStateList)
                     }
                 }
     }

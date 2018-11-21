@@ -43,13 +43,7 @@ import com.moez.QKSMS.common.Navigator
 import com.moez.QKSMS.common.androidxcompat.drawerOpen
 import com.moez.QKSMS.common.androidxcompat.scope
 import com.moez.QKSMS.common.base.QkThemedActivity
-import com.moez.QKSMS.common.util.extensions.autoScrollToStart
-import com.moez.QKSMS.common.util.extensions.dismissKeyboard
-import com.moez.QKSMS.common.util.extensions.resolveThemeColor
-import com.moez.QKSMS.common.util.extensions.scrapViews
-import com.moez.QKSMS.common.util.extensions.setBackgroundTint
-import com.moez.QKSMS.common.util.extensions.setTint
-import com.moez.QKSMS.common.util.extensions.setVisible
+import com.moez.QKSMS.common.util.extensions.*
 import com.moez.QKSMS.feature.conversations.ConversationItemTouchCallback
 import com.moez.QKSMS.feature.conversations.ConversationsAdapter
 import com.moez.QKSMS.repository.SyncRepository
@@ -64,7 +58,7 @@ import javax.inject.Inject
 
 class MainActivity : QkThemedActivity(), MainView {
 
-    @Inject lateinit  var navigator: Navigator
+    @Inject lateinit var navigator : Navigator
     @Inject lateinit var conversationsAdapter: ConversationsAdapter
     @Inject lateinit var drawerBadgesExperiment: DrawerBadgesExperiment
     @Inject lateinit var searchAdapter: SearchAdapter
@@ -96,16 +90,16 @@ class MainActivity : QkThemedActivity(), MainView {
     override val plusBannerIntent by lazy { plusBanner.clicks() }
     override val dismissRatingIntent by lazy { rateDismiss.clicks() }
     override val rateIntent by lazy { rateOkay.clicks() }
-    override val conversationsSelectedIntent by lazy { conversationsAdapter!!.selectionChanges }
+    override val conversationsSelectedIntent by lazy { conversationsAdapter.selectionChanges }
     override val confirmDeleteIntent: Subject<List<Long>> = PublishSubject.create()
-    override val swipeConversationIntent by lazy { itemTouchCallback!!.swipes }
+    override val swipeConversationIntent by lazy { itemTouchCallback.swipes }
     override val undoArchiveIntent: Subject<Unit> = PublishSubject.create()
     override val snackbarButtonIntent by lazy { snackbarButton.clicks() }
     override val backPressedIntent: Subject<Unit> = PublishSubject.create()
 
     private val viewModel by lazy { ViewModelProviders.of(this, viewModelFactory)[MainViewModel::class.java] }
     private val toggle by lazy { ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.main_drawer_open_cd, 0) }
-    private val itemTouchHelper by lazy { ItemTouchHelper(itemTouchCallback!!) }
+    private val itemTouchHelper by lazy { ItemTouchHelper(itemTouchCallback) }
     private val progressAnimator by lazy { ObjectAnimator.ofInt(syncingProgress, "progress", 0, 0) }
     private val archiveSnackbar by lazy {
         Snackbar.make(drawerLayout, R.string.toast_archived, Snackbar.LENGTH_LONG).apply {
@@ -146,10 +140,13 @@ class MainActivity : QkThemedActivity(), MainView {
                             }
 
                     // Miscellaneous views
-                    listOf(plusBadge1, plusBadge2).forEach { badge ->
-                        badge.setBackgroundTint(theme.theme)
-                        badge.setTextColor(theme.textPrimary)
-                    }
+                    //Tomas Venegas: it's a bad performance practive to use iterators
+                    plusBadge1.setBackgroundTint(theme.theme)
+                    plusBadge1.setTextColor(theme.textPrimary)
+                    plusBadge2.setBackgroundTint(theme.theme)
+                    plusBadge2.setTextColor(theme.textPrimary)
+
+
                     syncingProgress.indeterminateTintList = ColorStateList.valueOf(theme.theme)
                     plusIcon.setTint(theme.theme)
                     rateIcon.setTint(theme.theme)
@@ -162,8 +159,8 @@ class MainActivity : QkThemedActivity(), MainView {
         // Set the hamburger icon color
         toggle.drawerArrowDrawable.color = resolveThemeColor(android.R.attr.textColorSecondary)
 
-        itemTouchCallback!!.adapter = conversationsAdapter
-        conversationsAdapter!!.autoScrollToStart(recyclerView)
+        itemTouchCallback.adapter = conversationsAdapter
+        conversationsAdapter.autoScrollToStart(recyclerView)
     }
 
     override fun render(state: MainState) {
@@ -193,6 +190,8 @@ class MainActivity : QkThemedActivity(), MainView {
         toolbarSearch.setVisible(state.page is Inbox && state.page.selected == 0 || state.page is Searching)
         toolbarTitle.setVisible(toolbarSearch.visibility != View.VISIBLE)
 
+        //Tomas Venegas: findItem by id is processor greedy, use kotlin library or try avoiding needing to make all of this
+        //calls on each render
         toolbar.menu.findItem(R.id.archive)?.isVisible = state.page is Inbox && selectedConversations != 0
         toolbar.menu.findItem(R.id.unarchive)?.isVisible = state.page is Archived && selectedConversations != 0
         toolbar.menu.findItem(R.id.delete)?.isVisible = selectedConversations != 0
@@ -202,22 +201,25 @@ class MainActivity : QkThemedActivity(), MainView {
         toolbar.menu.findItem(R.id.unread)?.isVisible = !markRead && selectedConversations != 0
         toolbar.menu.findItem(R.id.block)?.isVisible = selectedConversations != 0
 
-        listOf(plusBadge1, plusBadge2).forEach { badge ->
-            badge.isVisible = drawerBadgesExperiment!!.variant && !state.upgraded
-        }
+
+        //Tomas Venegas: It's a bad performance practice to use iterators
+
+        plusBadge1.isVisible = drawerBadgesExperiment.variant && !state.upgraded
+        plusBadge2.isVisible = drawerBadgesExperiment.variant && !state.upgraded
+
         plus.isVisible = state.upgraded
         plusBanner.isVisible = !state.upgraded
         rateLayout.setVisible(state.showRating)
 
         compose.setVisible(state.page is Inbox || state.page is Archived)
-        conversationsAdapter!!.emptyView = empty.takeIf { state.page is Inbox || state.page is Archived }
+        conversationsAdapter.emptyView = empty.takeIf { state.page is Inbox || state.page is Archived }
 
         when (state.page) {
             is Inbox -> {
                 showBackButton(state.page.selected > 0)
                 title = getString(R.string.main_title_selected, state.page.selected)
                 if (recyclerView.adapter !== conversationsAdapter) recyclerView.adapter = conversationsAdapter
-                conversationsAdapter!!.updateData(state.page.data)
+                conversationsAdapter.updateData(state.page.data)
                 itemTouchHelper.attachToRecyclerView(recyclerView)
                 empty.setText(R.string.inbox_empty_text)
             }
@@ -225,7 +227,7 @@ class MainActivity : QkThemedActivity(), MainView {
             is Searching -> {
                 showBackButton(true)
                 if (recyclerView.adapter !== searchAdapter) recyclerView.adapter = searchAdapter
-                searchAdapter!!.data = state.page.data ?: listOf()
+                searchAdapter.data = state.page.data ?: listOf()
                 itemTouchHelper.attachToRecyclerView(null)
                 empty.setText(R.string.inbox_search_empty_text)
             }
@@ -237,7 +239,7 @@ class MainActivity : QkThemedActivity(), MainView {
                     false -> getString(R.string.title_archived)
                 }
                 if (recyclerView.adapter !== conversationsAdapter) recyclerView.adapter = conversationsAdapter
-                conversationsAdapter!!.updateData(state.page.data)
+                conversationsAdapter.updateData(state.page.data)
                 itemTouchHelper.attachToRecyclerView(null)
                 empty.setText(R.string.archived_empty_text)
             }
@@ -307,7 +309,7 @@ class MainActivity : QkThemedActivity(), MainView {
     }
 
     override fun clearSelection() {
-        conversationsAdapter!!.clearSelection()
+        conversationsAdapter.clearSelection()
     }
 
     override fun showDeleteDialog(conversations: List<Long>) {

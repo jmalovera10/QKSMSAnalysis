@@ -46,14 +46,17 @@ class GroupAvatarView @JvmOverloads constructor(context: Context, attrs: Attribu
     override fun onFinishInflate() {
         super.onFinishInflate()
 
-        avatars.forEach { avatar ->
-            avatar.setBackgroundResource(R.drawable.rectangle)
+
+        //Tomas Venegas: Iterators are a bad performance practice
+        for( i in 0 until avatars.size){
+            avatars[i].setBackgroundResource(R.drawable.rectangle)
 
             // If we're on API 21 we need to reapply the tint after changing the background
             if (Build.VERSION.SDK_INT < 22) {
-                avatar.applyTheme(0)
+                avatars[i].applyTheme(0)
             }
         }
+
 
         if (!isInEditMode) {
             updateView()
@@ -61,9 +64,10 @@ class GroupAvatarView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
     private fun updateView() {
-        avatars.forEachIndexed { index, avatar ->
-            avatar.visibility = if (contacts.size > index) View.VISIBLE else View.GONE
-            avatar.setContact(contacts.getOrNull(index))
+        //Tomas Venegas: Iterators are a bad performance practice
+        for( i in 0 until avatars.size){
+            avatars[i].visibility = if (contacts.size > i) View.VISIBLE else View.GONE
+            avatars[i].setContact(contacts.getOrNull(i))
         }
     }
 
