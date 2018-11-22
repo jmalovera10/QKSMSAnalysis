@@ -271,7 +271,7 @@ class ComposeViewModel @Inject constructor(
         // Backspaces should delete the most recent contact if there's no text input
         // Close the activity if user presses back
         view.queryBackspaceIntent
-                .withLatestFrom(selectedContacts, view.queryChangedIntent) { event, contacts, query ->
+                .withLatestFrom(selectedContacts, view.queryChangedIntent) { _, contacts, query ->
                     if (contacts.isNotEmpty() && query.isEmpty()) {
                         contactsReducer.onNext { it.dropLast(1) }
                     }
