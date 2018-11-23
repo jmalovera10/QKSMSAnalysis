@@ -18,14 +18,10 @@
  */
 package com.moez.QKSMS.feature.compose
 
-import android.app.PendingIntent.getActivity
 import android.content.Context
-import android.content.Intent
-import android.provider.Telephony
 import android.telephony.PhoneNumberUtils
 import android.telephony.SmsMessage
 import android.view.inputmethod.EditorInfo
-import android.widget.Toast
 import androidx.core.widget.toast
 import com.moez.QKSMS.R
 import com.moez.QKSMS.common.Navigator
@@ -42,20 +38,10 @@ import com.moez.QKSMS.extensions.isImage
 import com.moez.QKSMS.extensions.mapNotNull
 import com.moez.QKSMS.extensions.removeAccents
 import com.moez.QKSMS.filter.ContactFilter
-import com.moez.QKSMS.interactor.AddScheduledMessage
-import com.moez.QKSMS.interactor.CancelDelayedMessage
-import com.moez.QKSMS.interactor.ContactSync
-import com.moez.QKSMS.interactor.DeleteMessages
-import com.moez.QKSMS.interactor.MarkRead
-import com.moez.QKSMS.interactor.RetrySending
-import com.moez.QKSMS.interactor.SendMessage
+import com.moez.QKSMS.interactor.*
 import com.moez.QKSMS.manager.ActiveConversationManager
 import com.moez.QKSMS.manager.PermissionManager
-import com.moez.QKSMS.model.Attachment
-import com.moez.QKSMS.model.Contact
-import com.moez.QKSMS.model.Conversation
-import com.moez.QKSMS.model.Message
-import com.moez.QKSMS.model.PhoneNumber
+import com.moez.QKSMS.model.*
 import com.moez.QKSMS.repository.ContactRepository
 import com.moez.QKSMS.repository.ConversationRepository
 import com.moez.QKSMS.repository.MessageRepository
@@ -76,8 +62,6 @@ import io.realm.RealmList
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
-import androidx.core.content.ContextCompat.startActivity
-
 
 
 class ComposeViewModel @Inject constructor(

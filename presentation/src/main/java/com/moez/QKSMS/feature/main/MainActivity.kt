@@ -341,6 +341,7 @@ class MainActivity : QkThemedActivity(), MainView {
         backPressedIntent.onNext(Unit)
     }
 
+    //Juan Lovera: set strong references to null to release them and allow the GC to delete them.
     override fun onDestroy() {
         recyclerView.adapter = null
         recyclerView.layoutManager = null
