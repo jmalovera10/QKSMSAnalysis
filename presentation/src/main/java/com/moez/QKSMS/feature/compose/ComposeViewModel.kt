@@ -290,6 +290,8 @@ class ComposeViewModel @Inject constructor(
                     }
                 }
 
+        //Tomas Venegas: Use subscribeOn instead of subscribe and handle multi-threading
+
         // Update the list of selected contacts when a new contact is selected or an existing one is deselected
         Observable.merge(
                 view.chipDeletedIntent.doOnNext { contact ->
